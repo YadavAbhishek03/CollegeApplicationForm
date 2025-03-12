@@ -1,18 +1,21 @@
-version: '3'
+version: '3.8'
 services:
   backend:
-    build: .
-    ports:
-      - 5000:5000
+    build:
+      context: .
+      dockerfile: Dockerfile
     environment:
-      - DB_HOST=<your_rds_endpoint>
-      - DB_USER=<your_rds_username>
-      - DB_PASSWORD=<your_rds_password>
-      - DB_NAME=college_applications
+      - DB_HOST=database-1.cl0qgyukm509.ap-southeast-1.rds.amazonaws.com
+      - DB_USER=admin
+      - DB_PASSWORD=abhi143cap
+      - DB_NAME=sample
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/usr/src/app
     networks:
-      - app_network
-
+      - app-network
 networks:
-  app_network:
+  app-network:
     driver: bridge
 
