@@ -2,56 +2,67 @@ pipeline {
     agent any
 
     environment {
-        // Set environment variables for your project
         IMAGE_NAME = "collegeapplicationform_backend"
-        REGISTRY = "abhiyadav260"
-        TAG = "latest"
-        DOCKERFILE = "Dockerfile"
-        DOCKER_COMPOSE_FILE = "docker-compose.yml"
-        DB_HOST = "database-clg.cducwmmw2d0n.ap-south-1.rds.amazonaws.com"  // Change to your DB host if needed
+        REGISTRY   = "abhiyadav260"
+        TAG        = "latest"
+        DB_HOST    = "database-clg.cducwmmw2d0n.ap-south-1.rds.amazonaws.com"
     }
 
     stages {
+
         stage('Clone Repository') {
             steps {
-                // Clone the repository from GitHub (or other VCS)
-                git branch: 'main', url: 'https://github.com/YadavAbhishek03/CollegeApplicationForm.git'
+                git branch: 'main',
+                    url: 'https://github.com/YadavAbhishek03/CollegeApplicationForm.git'
             }
         }
 
         stage('Build Docker Image') {
             steps {
-                script {
-                    // Build the Docker image
-                    sh "docker build -t abhiyadav260/collegeapplicationform_backend:latest -f Dockerfile ."
-                }
+                sh '''
+                    docker build \
+                    -t ${REGISTRY}/${IMAGE_NAME}:${TAG} \
+                    -f Dockerfile .
+                '''
             }
         }
 
         stage('Push Docker Image') {
             steps {
-                script {
-                    // Log in to Docker Hub (or your registry)
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh '''
-                     	  echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
-  			'''
-                    }
-                    // Push the Docker image to your registry
-                    sh "docker push abhiyadav260/collegeapplicationform_backend:latest"
+                withCredentials([
+                    usernamePassword(
+                        credentialsId: 'docker-credentials',
+                        usernameVariable: 'DOCKER_USER',
+                        passwordVariable: 'DOCKER_PASS'
+                    )
+                ]) {
+                    sh '''
+                        echo "$DOCKER_PASS" | docker login \
+                        -u "$DOCKER_USER" --password-stdin
+
+                        docker push ${REGISTRY}/${IMAGE_NAME}:${TAG}
+                    '''
                 }
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                script {
-                    // Run the Docker Compose commands to deploy your app
+                withCredentials([
+                    string(credentialsId: 'db-user', variable: 'DB_USER'),
+                    string(credentialsId: 'db-password', variable: 'DB_PASSWORD'),
+                    string(credentialsId: 'db-name', variable: 'DB_NAME')
+                ]) {
                     sh '''
-			docker-compose down
-			docker-compose pull 
-			docker-compose up -d
-		    '''
+                        export DB_HOST=${DB_HOST}
+                        export DB_USER=${DB_USER}
+                        export DB_PASSWORD=${DB_PASSWORD}
+                        export DB_NAME=${DB_NAME}
+
+                        docker-compose down
+                        docker-compose pull
+                        docker-compose up -d
+                    '''
                 }
             }
         }
@@ -59,11 +70,11 @@ pipeline {
 
     post {
         success {
-            echo 'Deployment successful!'
+            echo '✅ Deployment successful!'
         }
-
         failure {
-            echo 'Deployment failed.'
+            echo '❌ Deployment failed!'
         }
     }
 }
+

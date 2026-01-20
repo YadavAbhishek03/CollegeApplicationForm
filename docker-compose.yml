@@ -5,10 +5,10 @@ services:
       context: .
       dockerfile: Dockerfile
     environment:
-      - DB_HOST=<database_hostname>
-      - DB_USER=<user>
-      - DB_PASSWORD=password
-      - DB_NAME=<database name>
+      - DB_HOST=${DB_HOST}
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_NAME=${DB_NAME}
     ports:
       - "5000:5000"
     volumes:
