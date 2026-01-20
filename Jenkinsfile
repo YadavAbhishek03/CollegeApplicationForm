@@ -8,14 +8,14 @@ pipeline {
         TAG = "latest"
         DOCKERFILE = "Dockerfile"
         DOCKER_COMPOSE_FILE = "docker-compose.yml"
-        DB_HOST = "database-1.cl0qgyukm509.ap-southeast-1.rds.amazonaws.com"  // Change to your DB host if needed
+        DB_HOST = "database-clg.cducwmmw2d0n.ap-south-1.rds.amazonaws.com"  // Change to your DB host if needed
     }
 
     stages {
         stage('Clone Repository') {
             steps {
                 // Clone the repository from GitHub (or other VCS)
-                git branch: 'main', url: 'https://github.com/sanbhi/CollegeApplicationForm.git'
+                git branch: 'main', url: 'https://github.com/YadavAbhishek03/CollegeApplicationForm.git'
             }
         }
 
