@@ -47,7 +47,11 @@ pipeline {
             steps {
                 script {
                     // Run the Docker Compose commands to deploy your app
-                    sh "docker-compose -f docker-compose.yml up -d"
+                    sh '''
+			docker-compose down
+			docker-compose pull 
+			docker-compose up -d
+		    '''
                 }
             }
         }
