@@ -55,15 +55,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Post-Deployment Cleanup') {
-            steps {
-                script {
-                    // Optionally clean up unused Docker images and containers
-                    sh "docker system prune -f"
-                }
-            }
-        }
     }
 
     post {
