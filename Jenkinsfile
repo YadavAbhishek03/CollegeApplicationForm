@@ -32,8 +32,10 @@ pipeline {
             steps {
                 script {
                     // Log in to Docker Hub (or your registry)
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'username', passwordVariable: 'password')]) {
-                        sh "docker login -u username -p password"
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                        sh '''
+                     	  echo "$DOCKER_PASS" | docker login -u "$DOCKER_USER" --password-stdin
+  			'''
                     }
                     // Push the Docker image to your registry
                     sh "docker push abhiyadav260/collegeapplicationform_backend:latest"
